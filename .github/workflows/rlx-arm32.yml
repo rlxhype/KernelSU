@@ -1,0 +1,63 @@
+name: RLX KernelSU ARM32 APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - rlxhype-arm32-v0.9.5
+
+jobs:
+  build:
+    name: Build ARM32 Manager
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK components
+        run: |
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0" \
+            "ndk;26.3.11579264" \
+            "cmake;3.22.1"
+
+      - name: Configure Android environment
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+
+      - name: Verify ARM32 ksud
+        run: |
+          file manager/app/src/main/jniLibs/armeabi-v7a/libksud.so
+          test -f manager/app/src/main/jniLibs/armeabi-v7a/libksud.so
+
+      - name: Build APK
+        working-directory: manager
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Rename APK
+        run: |
+          mkdir -p output
+          cp manager/app/build/outputs/apk/debug/*.apk \
+            output/RLX-KernelSU-ARM32.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RLX-KernelSU-ARM32
+          path: output/RLX-KernelSU-ARM32.apk
+          if-no-files-found: error

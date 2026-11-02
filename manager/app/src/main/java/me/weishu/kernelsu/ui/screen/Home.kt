@@ -280,16 +280,16 @@ private fun StatusCard(
                 }
 
                 else -> {
-                    Icon(Icons.Outlined.Block, stringResource(R.string.home_unsupported))
+                    Icon(Icons.Outlined.Warning, stringResource(R.string.home_unsupported))
                     Column(Modifier.padding(start = 20.dp)) {
                         Text(
-                            text = stringResource(R.string.home_unsupported),
+                            text = "Non-GKI kernel detected",
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            text = stringResource(R.string.home_unsupported_reason),
-                            style = MaterialTheme.typography.bodyMedium
+                            text = "KernelSU connection is not confirmed. Kernel version: ${Natives.version}",
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }

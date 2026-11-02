@@ -44,7 +44,13 @@ jobs:
           echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
           echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
 
+          set +o pipefail
           yes | "$SDKMANAGER" --licenses
+          LICENSE_STATUS=$?
+          set -o pipefail
+          if [ "$LICENSE_STATUS" -ne 0 ]; then
+            exit "$LICENSE_STATUS"
+          fi
 
           "$SDKMANAGER" \
             "platform-tools" \

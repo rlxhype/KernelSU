@@ -74,7 +74,9 @@ jobs:
         working-directory: manager
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon \
+            -Dorg.gradle.jvmargs="-Xmx1536m -XX:MaxMetaspaceSize=512m -XX:+UseParallelGC" \
+            --max-workers=2
 
       - name: Rename APK
         run: |
